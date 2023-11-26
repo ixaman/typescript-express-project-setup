@@ -1,4 +1,7 @@
-export type Guardian = {
+import { Model } from 'mongoose'
+import { Schema } from 'zod'
+
+export type TGuardian = {
   motherName: string
   fatherName: string
   fatherOcup: string
@@ -6,27 +9,27 @@ export type Guardian = {
   fatherContact: string
 }
 
-export type UserName = {
+export type TUserName = {
   firstName: string
-  middleName: string
+  middleName?: string
   lastName: string
 }
 
-export type LocalGuardian = {
+export type TLocalGuardian = {
   name: string
   address: string
   contactNo: string
 }
 
-export type Student = {
+export type TStudent = {
   id: string
-  name: UserName
-  gender: 'Male' | 'Female'
+  name: TUserName
+  gender: 'Male' | 'Female' | 'Other'
   dob?: string
   contactNumber: string
   emgContact: string
   email: string
-  bloodGroup:
+  bloodGroup?:
     | 'A'
     | 'B'
     | 'AB'
@@ -40,8 +43,18 @@ export type Student = {
     | 'O+'
     | 'O-'
   address: string
-  guardian: Guardian
-  localGuardian: LocalGuardian
-  avatar?: 'string'
+  guardian: TGuardian
+  localGuardian: TLocalGuardian
+  avatar?: string
   isActive: 'active' | 'blocked'
 }
+
+export type StudentMethods = {
+  isExist(id: string): Promise<TStudent | null>
+}
+
+export type StudentModel = Model<
+  TStudent,
+  Record<string, never>,
+  StudentMethods
+>

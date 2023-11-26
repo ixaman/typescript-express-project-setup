@@ -1,18 +1,26 @@
-import { Student } from './student.interface'
-import StudentModel from './student.model'
+import { TStudent } from './student.interface'
+import Student from './student.model'
 
-const createStudentIntoDb = async (student: Student) => {
-  const result = await StudentModel.create(student)
+const createStudentIntoDb = async (studentData: TStudent) => {
+  // const result = await StudentModel.create(student) //<<--using mongose own static method
+
+  const student = new Student(studentData)
+
+  if (await student.isExist(studentData.id)) {
+    throw new Error('User already exist in db')
+  }
+  const result = student.save()
+
   return result
 }
 
 const getStudentsFromDB = async () => {
-  const result = await StudentModel.find()
+  const result = await Student.find()
   return result
 }
 
 const getSingleStudent = async (sId: string) => {
-  const result = await StudentModel.findOne({ id: sId })
+  const result = await Student.findOne({ id: sId })
   return result
 }
 

@@ -1,13 +1,41 @@
-import { Schema, model, connect } from 'mongoose'
-import { Guardian, LocalGuardian, Student, UserName } from './student.interface'
+import { Schema, model } from 'mongoose'
+import {
+  TGuardian,
+  TLocalGuardian,
+  TStudent,
+  StudentMethods,
+  StudentModel,
+  TUserName,
+} from './student.interface'
+import validator from 'validator'
 
-const userNameSchema = new Schema<UserName>({
-  firstName: { type: String, required: true },
+const userNameSchema = new Schema<TUserName>({
+  firstName: {
+    type: String,
+    required: [true, 'Student must have a first naem'],
+    maxlength: [20, 'Must be within 20 character'],
+    trim: true,
+    validate: {
+      validator: function (value: string) {
+        const firstStr = value.charAt(0).toUpperCase() + value.slice(1)
+        return firstStr === value
+      },
+      message: '{VALUE} is not in capitalized format',
+    },
+  },
   middleName: { type: String },
-  lastName: { type: String, required: true },
+  lastName: {
+    type: String,
+    required: [true, 'Must have lastname'],
+    trim: true,
+    validate: {
+      validator: (value: string) => validator.isAlpha(value),
+      message: '{VALUE} is not valid',
+    },
+  },
 })
 
-const guardianSchema = new Schema<Guardian>({
+const guardianSchema = new Schema<TGuardian>({
   motherName: { type: String },
   fatherName: { type: String },
   fatherOcup: { type: String },
@@ -15,42 +43,78 @@ const guardianSchema = new Schema<Guardian>({
   fatherContact: { type: String },
 })
 
-const localGuardianSchema = new Schema<LocalGuardian>({
+const localGuardianSchema = new Schema<TLocalGuardian>({
   name: { type: String },
   address: { type: String },
   contactNo: { type: String },
 })
 
-const studentSchema = new Schema<Student>({
-  id: { type: String },
-  name: userNameSchema,
-  gender: { type: String, required: true },
+const studentSchema = new Schema<TStudent, StudentModel, StudentMethods>({
+  id: { type: String, required: true, unique: true },
+  name: {
+    type: userNameSchema,
+    required: true,
+  },
+  gender: {
+    type: String,
+    enum: {
+      values: ['Male', 'Female', 'Other'],
+      message: '{VALUE} is not valid. Must be Male, Female or Other',
+    },
+    required: true,
+  },
   dob: { type: String },
   contactNumber: { type: String },
   emgContact: { type: String },
-  email: { type: String, required: true },
-  bloodGroup: [
-    'A',
-    'B',
-    'AB',
-    'O',
-    'A+',
-    'A-',
-    'B+',
-    'B-',
-    'AB+',
-    'AB-',
-    'O+',
-    'O-',
-  ],
-  address: { type: String },
-  guardian: guardianSchema,
+  email: {
+    type: String,
+    required: [true, 'Must have an email address'],
+    unique: true,
+    validate: {
+      validator: (value: string) => validator.isEmail(value),
+      message: '{VALUE} must follow sturcture',
+    },
+  },
+  bloodGroup: {
+    type: String,
+    enum: [
+      'A',
+      'B',
+      'AB',
+      'O',
+      'A+',
+      'A-',
+      'B+',
+      'B-',
+      'AB+',
+      'AB-',
+      'O+',
+      'O-',
+    ],
+  },
+  address: { type: String, trim: true },
+  guardian: {
+    type: guardianSchema,
+    required: [true, 'Must have gurdian details'],
+  },
 
-  localGuardian: localGuardianSchema,
+  localGuardian: {
+    type: localGuardianSchema,
+    required: [true, 'Must have one local guardian'],
+  },
   avatar: { type: String },
-  isActive: ['active', 'blocked'],
+  isActive: {
+    type: String,
+    enum: ['active', 'blocked'],
+    default: 'active',
+  },
 })
 
-const StudentModel = model<Student>('Student', studentSchema)
+studentSchema.methods.isExist = async function (id: string) {
+  const existingUser = await Student.findOne({ id })
+  return existingUser
+}
 
-export default StudentModel
+const Student = model<TStudent, StudentModel>('Student', studentSchema)
+
+export default Student

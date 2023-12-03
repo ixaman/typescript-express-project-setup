@@ -12,7 +12,10 @@ app.use(cors())
 app.use('/api/v1/students', StudentsRoutes)
 
 app.get('/', (req: Request, res: Response) => {
-  res.send('Hello World!')
+  res.json({
+    success: true,
+    message: 'Welcome To P.H University Api !',
+  })
 })
 
 export default app

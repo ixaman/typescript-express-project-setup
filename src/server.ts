@@ -2,7 +2,7 @@ import config from './app/config'
 import mongoose from 'mongoose'
 import app from './app'
 
-async function main() {
+async function server() {
   try {
     await mongoose.connect(config.database_url as string)
     app.listen(config.port, () => {
@@ -13,4 +13,4 @@ async function main() {
   }
 }
 
-main()
+server().catch((err) => console.log(err))

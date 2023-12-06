@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-const zodUserNameValidationSchema = z.object({
+const userNameValidationSchema = z.object({
   firstName: z
     .string()
     .min(1)
@@ -17,7 +17,7 @@ const zodUserNameValidationSchema = z.object({
     }),
 })
 
-const zodGuardianValidationSchema = z.object({
+const guardianValidationSchema = z.object({
   motherName: z.string().min(1),
   fatherName: z.string().min(1),
   fatherOcup: z.string().min(1),
@@ -25,41 +25,49 @@ const zodGuardianValidationSchema = z.object({
   fatherContact: z.string().min(1),
 })
 
-const zodLocalGuardianValidationSchema = z.object({
+const localGuardianValidationSchema = z.object({
   name: z.string().min(1),
   address: z.string().min(1),
   contactNo: z.string().min(1),
 })
 
-const zodStudentValidationSchema = z.object({
-  id: z.string().min(1),
-  name: zodUserNameValidationSchema,
-  gender: z.enum(['Male', 'Female', 'Other']),
-  dob: z.string().trim().optional(),
-  contactNumber: z.string().min(1),
-  emgContact: z.string().min(1),
-  email: z.string().email(),
-  bloodGroup: z
-    .enum([
-      'A',
-      'B',
-      'AB',
-      'O',
-      'A+',
-      'A-',
-      'B+',
-      'B-',
-      'AB+',
-      'AB-',
-      'O+',
-      'O-',
-    ])
-    .optional(), // Make it required if blood group is mandatory
-  address: z.string().min(1),
-  guardian: zodGuardianValidationSchema,
-  localGuardian: zodLocalGuardianValidationSchema,
-  avatar: z.string().optional(),
-  isActive: z.enum(['active', 'blocked']).default('active'),
+const createStudentValidationSchema = z.object({
+  body: z.object({
+    password: z
+      .string({ invalid_type_error: 'Password must be a string' })
+      .max(20, { message: 'Password can not be more than 20 characters' })
+      .optional(),
+    student: z.object({
+      name: userNameValidationSchema,
+      gender: z.enum(['Male', 'Female', 'Other']),
+      dob: z.string().trim().optional(),
+      contactNumber: z.string().min(1),
+      emgContact: z.string().min(1),
+      email: z.string().email(),
+      bloodGroup: z
+        .enum([
+          'A',
+          'B',
+          'AB',
+          'O',
+          'A+',
+          'A-',
+          'B+',
+          'B-',
+          'AB+',
+          'AB-',
+          'O+',
+          'O-',
+        ])
+        .optional(), // Make it required if blood group is mandatory
+      address: z.string().min(1),
+      guardian: guardianValidationSchema,
+      localGuardian: localGuardianValidationSchema,
+      avatar: z.string().optional(),
+    }),
+  }),
 })
 
-export default zodStudentValidationSchema
+export const studentValidations = {
+  createStudentValidationSchema,
+}

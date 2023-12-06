@@ -50,7 +50,12 @@ const localGuardianSchema = new Schema<TLocalGuardian>({
 })
 
 const studentSchema = new Schema<TStudent, StudentModel, StudentMethods>({
-  id: { type: String, required: true, unique: true },
+  user: {
+    type: Schema.Types.ObjectId,
+    required: [true, 'User id is required'],
+    unique: true,
+    ref: 'User', //must include the model you want to make reference of
+  },
   name: {
     type: userNameSchema,
     required: true,
@@ -103,13 +108,9 @@ const studentSchema = new Schema<TStudent, StudentModel, StudentMethods>({
     required: [true, 'Must have one local guardian'],
   },
   avatar: { type: String },
-  isActive: {
-    type: String,
-    enum: ['active', 'blocked'],
-    default: 'active',
-  },
 })
 
+// custom instance method to check wheather student already exist
 studentSchema.methods.isExist = async function (id: string) {
   const existingUser = await Student.findOne({ id })
   return existingUser

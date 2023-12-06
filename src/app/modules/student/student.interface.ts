@@ -1,5 +1,4 @@
-import { Model } from 'mongoose'
-import { Schema } from 'zod'
+import { Model, Types } from 'mongoose'
 
 export type TGuardian = {
   motherName: string
@@ -23,6 +22,7 @@ export type TLocalGuardian = {
 
 export type TStudent = {
   id: string
+  user: Types.ObjectId
   name: TUserName
   gender: 'Male' | 'Female' | 'Other'
   dob?: string
@@ -46,7 +46,6 @@ export type TStudent = {
   guardian: TGuardian
   localGuardian: TLocalGuardian
   avatar?: string
-  isActive: 'active' | 'blocked'
 }
 
 export type StudentMethods = {

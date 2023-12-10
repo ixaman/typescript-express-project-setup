@@ -3,7 +3,7 @@ import sendResponse from '../../utils/sendResponse'
 import httpStatus from 'http-status'
 import catchAsync from '../../utils/catchAsync'
 
-const handleCreateStudent = catchAsync(async (req, res, next) => {
+const handleCreateStudent = catchAsync(async (req, res) => {
   const { password, student: studentData } = req.body
 
   const result = await userServices.createStudentIntoDb(password, studentData)

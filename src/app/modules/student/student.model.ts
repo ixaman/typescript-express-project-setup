@@ -1,4 +1,4 @@
-import { Schema, model } from 'mongoose'
+import { Schema, Types, model } from 'mongoose'
 import {
   TGuardian,
   TLocalGuardian,
@@ -50,6 +50,11 @@ const localGuardianSchema = new Schema<TLocalGuardian>({
 })
 
 const studentSchema = new Schema<TStudent, StudentModel, StudentMethods>({
+  id: {
+    type: String,
+    required: [true, 'ID is required'],
+    unique: true,
+  },
   user: {
     type: Schema.Types.ObjectId,
     required: [true, 'User id is required'],
@@ -108,6 +113,10 @@ const studentSchema = new Schema<TStudent, StudentModel, StudentMethods>({
     required: [true, 'Must have one local guardian'],
   },
   avatar: { type: String },
+  admissionSemester: {
+    type: Schema.Types.ObjectId,
+    ref: 'AcademicSemester',
+  },
 })
 
 // custom instance method to check wheather student already exist

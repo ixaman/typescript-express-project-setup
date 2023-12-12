@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-const userNameValidationSchema = z.object({
+const createUserNameValidationSchema = z.object({
   firstName: z
     .string()
     .min(1)
@@ -17,18 +17,18 @@ const userNameValidationSchema = z.object({
     }),
 })
 
-const guardianValidationSchema = z.object({
-  motherName: z.string().min(1),
-  fatherName: z.string().min(1),
-  fatherOcup: z.string().min(1),
-  motherOcup: z.string().min(1),
-  fatherContact: z.string().min(1),
+const createGuardianValidationSchema = z.object({
+  motherName: z.string(),
+  fatherName: z.string(),
+  fatherOcup: z.string(),
+  motherOcup: z.string(),
+  fatherContact: z.string(),
 })
 
-const localGuardianValidationSchema = z.object({
-  name: z.string().min(1),
-  address: z.string().min(1),
-  contactNo: z.string().min(1),
+const createLocalGuardianValidationSchema = z.object({
+  name: z.string(),
+  address: z.string(),
+  contactNo: z.string(),
 })
 
 const createStudentValidationSchema = z.object({
@@ -38,11 +38,11 @@ const createStudentValidationSchema = z.object({
       .max(20, { message: 'Password can not be more than 20 characters' })
       .optional(),
     student: z.object({
-      name: userNameValidationSchema,
+      name: createUserNameValidationSchema,
       gender: z.enum(['Male', 'Female', 'Other']),
       dob: z.string().trim().optional(),
-      contactNumber: z.string().min(1),
-      emgContact: z.string().min(1),
+      contactNumber: z.string(),
+      emgContact: z.string(),
       email: z.string().email(),
       bloodGroup: z
         .enum([
@@ -61,14 +61,82 @@ const createStudentValidationSchema = z.object({
         ])
         .optional(), // Make it required if blood group is mandatory
       address: z.string().min(1),
-      guardian: guardianValidationSchema,
-      localGuardian: localGuardianValidationSchema,
-      avatar: z.string().optional(),
+      guardian: createGuardianValidationSchema,
+      localGuardian: createLocalGuardianValidationSchema,
+      avatar: z.string(),
       admissionSemester: z.string(),
+    }),
+  }),
+})
+
+const updateUserNameValidationSchema = z.object({
+  firstName: z
+    .string()
+    .min(1)
+    .max(20)
+    .refine((value) => /^[A-Z][a-z]*$/.test(value), {
+      message: `{#label} must start with an uppercase letter and be followed by lowercase letters`,
+    })
+    .optional(), // If optional, trim is applied without requiring the field
+  middleName: z.string().optional(), // If optional, trim is applied without requiring the field
+  lastName: z
+    .string()
+    .min(1)
+    .refine((value) => /^[a-zA-Z]+$/.test(value), {
+      message: `{#label} must only contain alphabetical characters`,
+    })
+    .optional(),
+})
+
+const updateGuardianValidationSchema = z.object({
+  motherName: z.string().optional(),
+  fatherOcup: z.string().optional(),
+  motherOcup: z.string().optional(),
+  fatherName: z.string().optional(),
+  fatherContact: z.string().optional(),
+})
+
+const updateLocalGuardianValidationSchema = z.object({
+  name: z.string().optional(),
+  address: z.string().optional(),
+  contactNo: z.string().optional(),
+})
+
+const updateStudentValidationSchema = z.object({
+  body: z.object({
+    student: z.object({
+      name: updateUserNameValidationSchema.optional(),
+      gender: z.enum(['Male', 'Female', 'Other']).optional(),
+      dob: z.string().trim().optional(),
+      contactNumber: z.string().optional(),
+      emgContact: z.string().optional(),
+      email: z.string().email().optional(),
+      bloodGroup: z
+        .enum([
+          'A',
+          'B',
+          'AB',
+          'O',
+          'A+',
+          'A-',
+          'B+',
+          'B-',
+          'AB+',
+          'AB-',
+          'O+',
+          'O-',
+        ])
+        .optional(), // Make it required if blood group is mandatory
+      address: z.string().optional(),
+      guardian: updateGuardianValidationSchema.optional(),
+      localGuardian: updateLocalGuardianValidationSchema.optional(),
+      avatar: z.string().optional(),
+      admissionSemester: z.string().optional(),
     }),
   }),
 })
 
 export const studentValidations = {
   createStudentValidationSchema,
+  updateStudentValidationSchema,
 }

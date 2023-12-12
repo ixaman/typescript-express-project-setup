@@ -4,6 +4,7 @@ import httpStatus from 'http-status'
 import catchAsync from '../../utils/catchAsync'
 import AppError from '../../error/AppError'
 
+//HANDLE GET ALL STUDENTS
 const handleGetStudents = catchAsync(async (req, res) => {
   const data = await StudentServices.getStudentsFromDB()
   sendResponse(res, {
@@ -14,6 +15,7 @@ const handleGetStudents = catchAsync(async (req, res) => {
   })
 })
 
+//HANDLE GET SINGLE STUDENT
 const handleGetSingleStudent = catchAsync(async (req, res) => {
   const { studentId: sId } = req.params
   const data = await StudentServices.getSingleStudent(sId)
@@ -30,6 +32,21 @@ const handleGetSingleStudent = catchAsync(async (req, res) => {
   }
 })
 
+//UPDATE STUDENT
+const handleUpdateStudent = catchAsync(async (req, res) => {
+  const { studentId } = req.params
+  const { student } = req.body
+  const result = await StudentServices.updateStudentIntoDB(studentId, student)
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Student is updated succesfully',
+    data: result,
+  })
+})
+
+//HANDLE DELETE STUDENT
 const handleDeleteStudent = catchAsync(async (req, res) => {
   const { studentId } = req.params
   const result = await StudentServices.deleteStudentFromDB(studentId)
@@ -46,4 +63,5 @@ export const StudentControllers = {
   handleGetStudents,
   handleGetSingleStudent,
   handleDeleteStudent,
+  handleUpdateStudent,
 }

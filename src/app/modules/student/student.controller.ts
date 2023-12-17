@@ -6,7 +6,7 @@ import AppError from '../../error/AppError'
 
 //HANDLE GET ALL STUDENTS
 const handleGetStudents = catchAsync(async (req, res) => {
-  const data = await StudentServices.getStudentsFromDB()
+  const data = await StudentServices.getStudentsFromDB(req.query)
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,

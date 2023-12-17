@@ -49,82 +49,90 @@ const localGuardianSchema = new Schema<TLocalGuardian>({
   contactNo: { type: String },
 })
 
-const studentSchema = new Schema<TStudent, StudentModel, StudentMethods>({
-  id: {
-    type: String,
-    required: [true, 'ID is required'],
-    unique: true,
-  },
-  user: {
-    type: Schema.Types.ObjectId,
-    required: [true, 'User id is required'],
-    unique: true,
-    ref: 'User', //must include the model you want to make reference of
-  },
-  name: {
-    type: userNameSchema,
-    required: true,
-  },
-  gender: {
-    type: String,
-    enum: {
-      values: ['Male', 'Female', 'Other'],
-      message: '{VALUE} is not valid. Must be Male, Female or Other',
+const studentSchema = new Schema<TStudent, StudentModel, StudentMethods>(
+  {
+    id: {
+      type: String,
+      required: [true, 'ID is required'],
+      unique: true,
     },
-    required: true,
-  },
-  dob: { type: String },
-  contactNumber: { type: String },
-  emgContact: { type: String },
-  email: {
-    type: String,
-    required: [true, 'Must have an email address'],
-    unique: true,
-    validate: {
-      validator: (value: string) => validator.isEmail(value),
-      message: '{VALUE} must follow sturcture',
+    user: {
+      type: Schema.Types.ObjectId,
+      required: [true, 'User id is required'],
+      unique: true,
+      ref: 'User', //must include the model you want to make reference of
     },
-  },
-  bloodGroup: {
-    type: String,
-    enum: [
-      'A',
-      'B',
-      'AB',
-      'O',
-      'A+',
-      'A-',
-      'B+',
-      'B-',
-      'AB+',
-      'AB-',
-      'O+',
-      'O-',
-    ],
-  },
-  address: { type: String, trim: true },
-  guardian: {
-    type: guardianSchema,
-    required: [true, 'Must have gurdian details'],
-  },
+    name: {
+      type: userNameSchema,
+      required: true,
+    },
+    gender: {
+      type: String,
+      enum: {
+        values: ['Male', 'Female', 'Other'],
+        message: '{VALUE} is not valid. Must be Male, Female or Other',
+      },
+      required: true,
+    },
+    dob: { type: String },
+    contactNumber: { type: String },
+    emgContact: { type: String },
+    email: {
+      type: String,
+      required: [true, 'Must have an email address'],
+      unique: true,
+      validate: {
+        validator: (value: string) => validator.isEmail(value),
+        message: '{VALUE} must follow sturcture',
+      },
+    },
+    bloodGroup: {
+      type: String,
+      enum: [
+        'A',
+        'B',
+        'AB',
+        'O',
+        'A+',
+        'A-',
+        'B+',
+        'B-',
+        'AB+',
+        'AB-',
+        'O+',
+        'O-',
+      ],
+    },
+    address: { type: String, trim: true },
+    guardian: {
+      type: guardianSchema,
+      required: [true, 'Must have gurdian details'],
+    },
 
-  localGuardian: {
-    type: localGuardianSchema,
-    required: [true, 'Must have one local guardian'],
+    localGuardian: {
+      type: localGuardianSchema,
+      required: [true, 'Must have one local guardian'],
+    },
+    avatar: { type: String },
+    admissionSemester: {
+      type: Schema.Types.ObjectId,
+      ref: 'Semester',
+    },
+    academicDepartment: {
+      type: Schema.Types.ObjectId,
+      ref: 'Department',
+    },
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
   },
-  avatar: { type: String },
-  admissionSemester: {
-    type: Schema.Types.ObjectId,
-    ref: 'Semester',
-  },
-  academicDepartment: {
-    type: Schema.Types.ObjectId,
-    ref: 'Department',
-  },
-  isDeleted: {
-    type: Boolean,
-    default: false,
-  },
+  { timestamps: true },
+)
+
+//virtual field fullName added
+studentSchema.virtual('fullName').get(function () {
+  return this?.name?.firstName + this?.name?.middleName + this?.name?.lastName
 })
 
 // custom instance method to check wheather student already exist

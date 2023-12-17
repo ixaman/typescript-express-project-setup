@@ -24,6 +24,13 @@ app.get('/', (req: Request, res: Response) => {
   })
 })
 
+// test route
+const test = async (req: Request, res: Response) => {
+  console.log('This is test')
+}
+
+app.get('/test', test)
+
 // Global error handler
 app.use(globalErrorHandler)
 

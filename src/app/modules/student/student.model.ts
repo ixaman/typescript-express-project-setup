@@ -135,16 +135,22 @@ const studentSchema = new Schema<TStudent, StudentModel, StudentMethods>(
   },
 )
 
+// filter out deleted documents
+studentSchema.pre('find', function (next) {
+  this.find({ isDeleted: { $ne: true } })
+  next()
+})
+
 //virtual field fullName added
 studentSchema.virtual('fullName').get(function () {
   return this?.name?.firstName + this?.name?.middleName + this?.name?.lastName
 })
 
 // get all students while excluding isDelete = true
-studentSchema.pre('aggregate', function (next) {
-  this.pipeline().unshift({ $match: { isDeleted: { $ne: true } } })
-  next()
-})
+// studentSchema.pre('aggregate', function (next) {
+//   this.pipeline().unshift({ $match: { isDeleted: { $ne: true } } })
+//   next()
+// })
 
 // custom instance method to check wheather student already exist
 studentSchema.methods.isExist = async function (id: string) {

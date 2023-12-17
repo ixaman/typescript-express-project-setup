@@ -1,23 +1,30 @@
 import { Router } from 'express'
 import vaidateRequest from '../../middlewares/validateRequest'
-import { FacultyValidations } from './academic-faculty.validation'
-import { facultyControllers } from './academic-faculty.controller'
+import { AcademicFacultyValidations } from './academic-faculty.validation'
+import { academicFacultyControllers } from './academic-faculty.controller'
 
 const router = Router()
 
 router.post(
-  '/create-faculty',
-  vaidateRequest(FacultyValidations.createacademicFacultyValidationSchema),
-  facultyControllers.handleCreateAcademicFaculty,
+  '/create-academic-faculty',
+  vaidateRequest(
+    AcademicFacultyValidations.createacademicFacultyValidationSchema,
+  ),
+  academicFacultyControllers.handleCreateAcademicFaculty,
 )
-router.get('/', facultyControllers.handleGetFaulties)
+router.get('/', academicFacultyControllers.handleGetAcademicFaculties)
 
-router.get('/:facultyId', facultyControllers.handleGetSingleFaculty)
+router.get(
+  '/:facultyId',
+  academicFacultyControllers.handleGetSingleAcademicFaculty,
+)
 
 router.patch(
   '/:facultyId',
-  vaidateRequest(FacultyValidations.updateacademicFacultyValidationSchema),
-  facultyControllers.handleUpdateFaculty,
+  vaidateRequest(
+    AcademicFacultyValidations.updateacademicFacultyValidationSchema,
+  ),
+  academicFacultyControllers.handleUpdateAcademicFaculty,
 )
 
 export const AcademicFacultyRoutes = router

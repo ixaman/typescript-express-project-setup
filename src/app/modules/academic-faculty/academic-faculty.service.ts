@@ -11,12 +11,12 @@ const getAcademicFaculties = async () => {
   return result
 }
 
-const getSingleFaculty = async (payload: string) => {
+const getSingleAcademicFaculty = async (payload: string) => {
   const result = await AcademicFaculty.findOne({ _id: payload })
   return result
 }
 
-const updateFaculty = async (
+const updateAcademicFaculty = async (
   facultyId: string,
   payload: Partial<TAcademicFaculty>,
 ) => {
@@ -31,6 +31,6 @@ const updateFaculty = async (
 export const FacultyServices = {
   createAcademicFacultyIntoDB,
   getAcademicFaculties,
-  getSingleFaculty,
-  updateFaculty,
+  getSingleAcademicFaculty,
+  updateAcademicFaculty,
 }

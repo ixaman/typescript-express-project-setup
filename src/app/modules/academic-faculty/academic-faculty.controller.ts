@@ -14,7 +14,7 @@ const handleCreateAcademicFaculty = catchAsync(async (req, res) => {
   })
 })
 
-const handleGetFaulties = catchAsync(async (req, res) => {
+const handleGetAcademicFaculties = catchAsync(async (req, res) => {
   const result = await FacultyServices.getAcademicFaculties()
 
   sendResponse(res, {
@@ -25,9 +25,9 @@ const handleGetFaulties = catchAsync(async (req, res) => {
   })
 })
 
-const handleGetSingleFaculty = catchAsync(async (req, res) => {
+const handleGetSingleAcademicFaculty = catchAsync(async (req, res) => {
   const { facultyId } = req.params
-  const result = await FacultyServices.getSingleFaculty(facultyId)
+  const result = await FacultyServices.getSingleAcademicFaculty(facultyId)
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -37,10 +37,13 @@ const handleGetSingleFaculty = catchAsync(async (req, res) => {
   })
 })
 
-const handleUpdateFaculty = catchAsync(async (req, res) => {
+const handleUpdateAcademicFaculty = catchAsync(async (req, res) => {
   const { facultyId } = req.params
 
-  const result = await FacultyServices.updateFaculty(facultyId, req.body)
+  const result = await FacultyServices.updateAcademicFaculty(
+    facultyId,
+    req.body,
+  )
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -50,9 +53,9 @@ const handleUpdateFaculty = catchAsync(async (req, res) => {
   })
 })
 
-export const facultyControllers = {
+export const academicFacultyControllers = {
   handleCreateAcademicFaculty,
-  handleGetFaulties,
-  handleGetSingleFaculty,
-  handleUpdateFaculty,
+  handleGetAcademicFaculties,
+  handleGetSingleAcademicFaculty,
+  handleUpdateAcademicFaculty,
 }

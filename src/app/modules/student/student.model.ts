@@ -1,4 +1,4 @@
-import { Schema, Types, model } from 'mongoose'
+import { Schema, model } from 'mongoose'
 import {
   TGuardian,
   TLocalGuardian,
@@ -113,7 +113,7 @@ const studentSchema = new Schema<TStudent, StudentModel, StudentMethods>(
       type: localGuardianSchema,
       required: [true, 'Must have one local guardian'],
     },
-    avatar: { type: String },
+    profileImg: { type: String },
     admissionSemester: {
       type: Schema.Types.ObjectId,
       ref: 'Semester',
@@ -127,12 +127,23 @@ const studentSchema = new Schema<TStudent, StudentModel, StudentMethods>(
       default: false,
     },
   },
-  { timestamps: true },
+  {
+    toJSON: {
+      virtuals: true,
+    },
+    timestamps: true,
+  },
 )
 
 //virtual field fullName added
 studentSchema.virtual('fullName').get(function () {
   return this?.name?.firstName + this?.name?.middleName + this?.name?.lastName
+})
+
+// get all students while excluding isDelete = true
+studentSchema.pre('aggregate', function (next) {
+  this.pipeline().unshift({ $match: { isDeleted: { $ne: true } } })
+  next()
 })
 
 // custom instance method to check wheather student already exist

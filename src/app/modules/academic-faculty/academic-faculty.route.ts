@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import vaidateRequest from '../../middlewares/validateRequest'
+import validateRequest from '../../middlewares/validateRequest'
 import { AcademicFacultyValidations } from './academic-faculty.validation'
 import { academicFacultyControllers } from './academic-faculty.controller'
 
@@ -7,7 +7,7 @@ const router = Router()
 
 router.post(
   '/create-academic-faculty',
-  vaidateRequest(
+  validateRequest(
     AcademicFacultyValidations.createacademicFacultyValidationSchema,
   ),
   academicFacultyControllers.handleCreateAcademicFaculty,
@@ -21,7 +21,7 @@ router.get(
 
 router.patch(
   '/:facultyId',
-  vaidateRequest(
+  validateRequest(
     AcademicFacultyValidations.updateacademicFacultyValidationSchema,
   ),
   academicFacultyControllers.handleUpdateAcademicFaculty,

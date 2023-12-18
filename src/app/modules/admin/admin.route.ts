@@ -1,7 +1,7 @@
 import express from 'express'
 import { AdminControllers } from './admin.controller'
 import { updateAdminValidationSchema } from './admin.validation'
-import vaidateRequest from '../../middlewares/validateRequest'
+import validateRequest from '../../middlewares/validateRequest'
 
 const router = express.Router()
 
@@ -11,7 +11,7 @@ router.get('/:id', AdminControllers.handleGetSingleAdmin)
 
 router.patch(
   '/:id',
-  vaidateRequest(updateAdminValidationSchema),
+  validateRequest(updateAdminValidationSchema),
   AdminControllers.handleUpdateAdmin,
 )
 

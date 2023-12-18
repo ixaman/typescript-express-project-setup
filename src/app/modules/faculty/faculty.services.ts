@@ -23,12 +23,6 @@ const getAllFacultiesFromDB = async (query: Record<string, unknown>) => {
 }
 
 const getSingleFacultyFromDB = async (id: string) => {
-  const isExist = await FacultyMember.isUserExists(id)
-
-  if (!isExist) {
-    throw new AppError(httpStatus.NOT_FOUND, 'Faculty member not found !')
-  }
-
   const result = await FacultyMember.findById(id).populate('academicDepartment')
 
   return result

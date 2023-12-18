@@ -1,5 +1,5 @@
 import express from 'express'
-import vaidateRequest from '../../middlewares/validateRequest'
+import validateRequest from '../../middlewares/validateRequest'
 import { updateFacultyValidationSchema } from './faculty.validation'
 import { FacultyControllers } from './faculty.controller'
 
@@ -7,7 +7,7 @@ const router = express.Router()
 
 router.patch(
   '/:id',
-  vaidateRequest(updateFacultyValidationSchema),
+  validateRequest(updateFacultyValidationSchema),
   FacultyControllers.handleUpdateFaculty,
 )
 

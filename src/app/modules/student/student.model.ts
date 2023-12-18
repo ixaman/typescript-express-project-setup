@@ -154,7 +154,7 @@ studentSchema.virtual('fullName').get(function () {
 
 // custom instance method to check wheather student already exist
 studentSchema.methods.isExist = async function (id: string) {
-  const existingUser = await Student.findOne({ id })
+  const existingUser = await Student.findById(id)
   return existingUser
 }
 

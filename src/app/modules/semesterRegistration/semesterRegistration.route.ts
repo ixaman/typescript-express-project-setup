@@ -31,4 +31,9 @@ router.get(
   SemesterRegistrationControllers.handleGetSingleSemesterRegistrationFromDB,
 )
 
+router.delete(
+  '/:id',
+  SemesterRegistrationControllers.handleDeleteSemesterRegistration,
+)
+
 export const SemesterRegistrationRoutes = router

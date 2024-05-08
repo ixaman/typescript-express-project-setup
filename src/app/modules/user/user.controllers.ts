@@ -7,7 +7,12 @@ import catchAsync from '../../utils/catchAsync'
 const handleCreateStudent = catchAsync(async (req, res) => {
   const { password, student: studentData } = req.body
 
-  const result = await userServices.createStudentIntoDb(password, studentData)
+  const result = await userServices.createStudentIntoDb(
+    req.file,
+    password,
+    studentData,
+  )
+
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -33,7 +38,6 @@ const handleCreateFaculty = catchAsync(async (req, res) => {
 //CREATE USER--> ADMIN USER
 const handleCreateAdmin = catchAsync(async (req, res) => {
   const { password, admin: adminData } = req.body
-
   const result = await userServices.createAdminIntoDB(password, adminData)
 
   sendResponse(res, {
@@ -44,8 +48,36 @@ const handleCreateAdmin = catchAsync(async (req, res) => {
   })
 })
 
+//CHANGE USER STATUS
+const handleChangeStatus = catchAsync(async (req, res) => {
+  const result = await userServices.changeStatus(req.params.id, req.body)
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'User status changed successfully!',
+    data: result,
+  })
+})
+
+//GET ME
+const handleGetMe = catchAsync(async (req, res) => {
+  const { userId, role } = req.user
+
+  const result = await userServices.getMe(userId, role)
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'User fetched successfully!',
+    data: result,
+  })
+})
+
 export const userControllers = {
   handleCreateStudent,
   handleCreateFaculty,
   handleCreateAdmin,
+  handleChangeStatus,
+  handleGetMe,
 }

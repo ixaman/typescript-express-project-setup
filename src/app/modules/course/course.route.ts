@@ -3,52 +3,52 @@ import { CourseValidations } from './course.validation'
 import validateRequest from '../../middlewares/validateRequest'
 import { CourseControllers } from './course.controller'
 import authMiddleware from '../../middlewares/auth'
-import { userRoles } from '../user/user.constant'
+import { USER_ROLE } from '../user/user.constant'
 
 const router = express.Router()
 
 router.post(
   '/create-course',
-  authMiddleware(userRoles.admin),
+  authMiddleware(USER_ROLE.admin),
   validateRequest(CourseValidations.createCourseValidationSchema),
   CourseControllers.handleCreateCourse,
 )
 
 router.get(
   '/:id',
-  authMiddleware(userRoles.admin, userRoles.admin, userRoles.student),
+  authMiddleware(USER_ROLE.admin, USER_ROLE.admin, USER_ROLE.student),
   CourseControllers.handleGetSingleCourse,
 )
 
 router.patch(
   '/:id',
-  authMiddleware(userRoles.admin),
+  authMiddleware(USER_ROLE.admin),
   validateRequest(CourseValidations.updateCourseValidationSchema),
   CourseControllers.handleUpdateCourse,
 )
 
 router.delete(
   '/:id',
-  authMiddleware(userRoles.admin),
+  authMiddleware(USER_ROLE.admin),
   CourseControllers.handleDeleteCourse,
 )
 
 router.get(
   '/',
-  authMiddleware(userRoles.admin, userRoles.admin, userRoles.student),
+  // authMiddleware(userRoles.admin, userRoles.admin, userRoles.student),
   CourseControllers.handleGetAllCourses,
 )
 
 router.put(
   '/:courseId/assign-faculties',
-  authMiddleware(userRoles.admin),
+  authMiddleware(USER_ROLE.admin),
   validateRequest(CourseValidations.facultiesWithCourseValidationSchema),
   CourseControllers.handleAssignFacultiesWithCourse,
 )
 
 router.delete(
   '/:courseId/remove-faculties',
-  authMiddleware(userRoles.admin),
+  authMiddleware(USER_ROLE.admin),
   validateRequest(CourseValidations.facultiesWithCourseValidationSchema),
   CourseControllers.handleRemoveFacultiesFromCourse,
 )

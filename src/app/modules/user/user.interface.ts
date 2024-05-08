@@ -1,17 +1,18 @@
 import { Model } from 'mongoose'
-import { userRoles } from './user.constant'
+import { USER_ROLE } from './user.constant'
 
 export interface TUser {
   id: string
+  email: string
   password: string
   needPassChanges: boolean
   passwordChangedAt?: Date
-  role: 'admin' | 'student' | 'faculty'
+  role: 'superAdmin' | 'admin' | 'student' | 'faculty'
   status: 'in-progress' | 'blocked'
   isDeleted: boolean
 }
 
-export type TUserRole = keyof typeof userRoles
+export type TUserRole = keyof typeof USER_ROLE
 
 export interface UserModel extends Model<TUser> {
   isUserExistByCustomId(id: string): Promise<TUser>

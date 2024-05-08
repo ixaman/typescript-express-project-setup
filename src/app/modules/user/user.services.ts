@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import httpStatus from 'http-status'
 import config from '../../config'
 import AppError from '../../error/AppError'
@@ -17,8 +18,14 @@ import AcademicDepartment from '../academic-department/academic-department.model
 import { FacultyMember } from '../faculty/faculty.model'
 import { TAdmin } from '../admin/admin.interface'
 import { Admin } from '../admin/admin.model'
+import { USER_ROLE } from './user.constant'
+import { sendImageToCloudinary } from '../../utils/sendAssetToCloudinary'
 
-const createStudentIntoDb = async (password: string, payload: TStudent) => {
+const createStudentIntoDb = async (
+  file: any,
+  password: string,
+  payload: TStudent,
+) => {
   //create a new user object
   const userData: Partial<TUser> = {}
 
@@ -27,6 +34,7 @@ const createStudentIntoDb = async (password: string, payload: TStudent) => {
 
   //set student role
   userData.role = 'student'
+  userData.email = payload.email
 
   // get the semester
   const admissionSemester = await AcademicSemester.findById(
@@ -38,13 +46,22 @@ const createStudentIntoDb = async (password: string, payload: TStudent) => {
     throw new AppError(httpStatus.NOT_FOUND, 'Admission semester not found')
   }
 
-  // generate studentid
-  userData.id = await generateStudentId(admissionSemester)
-
   const session = await mongoose.startSession()
 
   try {
     session.startTransaction()
+
+    // SET generate studentid
+    userData.id = await generateStudentId(admissionSemester)
+
+    //SEND IMAGE TO CLOUDINARY
+    const path = file.path
+    const imageName = `${userData.id}_${payload.name.firstName}`
+
+    const { secure_url } = (await sendImageToCloudinary(path, imageName)) as {
+      secure_url: string
+    }
+
     //create a user do (transaction-1)
     const newUser = await User.create([userData], { session })
 
@@ -57,12 +74,15 @@ const createStudentIntoDb = async (password: string, payload: TStudent) => {
       //set id, _id as user
       payload.id = newUser[0].id
       payload.user = newUser[0]._id //referenced id
-
+      payload.profileImg = secure_url
       //create a student do (transaction-2)
       const newStudent = await Student.create([payload], { session })
 
       if (!newStudent.length) {
-        throw new AppError(httpStatus.BAD_REQUEST, 'Failed to create Student')
+        throw new AppError(
+          httpStatus.BAD_REQUEST,
+          'Failed to create Student in T-2',
+        )
       }
 
       await session.commitTransaction()
@@ -73,7 +93,7 @@ const createStudentIntoDb = async (password: string, payload: TStudent) => {
   } catch (err) {
     await session.abortTransaction()
     await session.endSession()
-    throw new AppError(httpStatus.BAD_REQUEST, 'Failed to create Student')
+    throw new AppError(httpStatus.BAD_REQUEST, err as string)
   }
 }
 
@@ -86,6 +106,7 @@ const createFacultyIntoDB = async (password: string, payload: TFaculty) => {
 
   //set student role
   userData.role = 'faculty'
+  userData.email = payload.email
 
   // find academic department info
   const academicDepartment = await AcademicDepartment.findById(
@@ -140,8 +161,10 @@ const createAdminIntoDB = async (password: string, payload: TAdmin) => {
   //if password is not given , use deafult password
   userData.password = password || (config.default_password as string)
 
-  //set student role
+  //set user role
   userData.role = 'admin'
+  //set user email
+  userData.email = payload.email
 
   const session = await mongoose.startSession()
 
@@ -180,8 +203,39 @@ const createAdminIntoDB = async (password: string, payload: TAdmin) => {
   }
 }
 
+//change user status by id
+const changeStatus = async (id: string, payload: { status: string }) => {
+  const result = await User.findByIdAndUpdate(id, payload, { new: true })
+
+  return result
+}
+
+//get user by token
+const getMe = async (userId: string, role: string) => {
+  let result = null
+
+  if (role === USER_ROLE.student) {
+    result = await Student.findOne({ id: userId })
+      .populate('user')
+      .populate('academicDepartment')
+      .populate('admissionSemester')
+  }
+  if (role === USER_ROLE.admin) {
+    result = await Admin.findOne({ id: userId }).populate('user')
+  }
+  if (role === USER_ROLE.faculty) {
+    result = await FacultyMember.findOne({ id: userId })
+      .populate('user')
+      .populate('academicDepartment')
+  }
+
+  return result
+}
+
 export const userServices = {
   createStudentIntoDb,
   createFacultyIntoDB,
   createAdminIntoDB,
+  changeStatus,
+  getMe,
 }

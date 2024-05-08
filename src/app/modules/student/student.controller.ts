@@ -6,12 +6,19 @@ import AppError from '../../error/AppError'
 
 //HANDLE GET ALL STUDENTS
 const handleGetStudents = catchAsync(async (req, res) => {
-  const data = await StudentServices.getStudentsFromDB(req.query)
+  const result = await StudentServices.getStudentsFromDB(req.query)
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
     message: 'Students data retrived successfully',
-    data,
+    data: {
+      meta: {
+        page: req?.query?.page,
+        limit: req?.query?.limit,
+        total: result?.length,
+      },
+      result: result,
+    },
   })
 })
 

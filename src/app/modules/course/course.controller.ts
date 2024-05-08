@@ -21,7 +21,14 @@ const handleGetAllCourses = catchAsync(async (req, res) => {
     statusCode: httpStatus.OK,
     success: true,
     message: 'Course are retrieved successfully',
-    data: result,
+    data: {
+      meta: {
+        page: req?.query?.page,
+        limit: req?.query?.limit,
+        total: result?.length,
+      },
+      result: result,
+    },
   })
 })
 

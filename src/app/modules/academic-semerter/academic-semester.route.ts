@@ -2,6 +2,7 @@ import { Router } from 'express'
 import { semesterControllers } from './academic-semester.controller'
 import validateRequest from '../../middlewares/validateRequest'
 import { SemesterValidations } from './academic-semester.validation'
+import authMiddleware from '../../middlewares/auth'
 
 const router = Router()
 
@@ -10,7 +11,7 @@ router.post(
   validateRequest(SemesterValidations.createSemesterValidationSchema),
   semesterControllers.handleCreateAcademicSemester,
 )
-router.get('/', semesterControllers.handleGetSemesters)
+router.get('/', authMiddleware('admin'), semesterControllers.handleGetSemesters)
 router.get('/:semesterId', semesterControllers.handleGetSingleSemester)
 router.patch(
   '/:semesterId',

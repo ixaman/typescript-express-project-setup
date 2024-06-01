@@ -1,20 +1,15 @@
 import { z } from 'zod'
 
 const createUserNameValidationSchema = z.object({
-  firstName: z
-    .string()
-    .min(1)
-    .max(20)
-    .refine((value) => /^[A-Z][a-z]*$/.test(value), {
-      message: `{#label} must start with an uppercase letter and be followed by lowercase letters`,
-    }), // If optional, trim is applied without requiring the field
+  firstName: z.string().min(1).max(20),
+  // .refine((value) => /^[A-Z][a-z]*$/.test(value), {
+  //   message: `{#label} must start with an uppercase letter and be followed by lowercase letters`,
+  // }), // If optional, trim is applied without requiring the field
   middleName: z.string().optional(), // If optional, trim is applied without requiring the field
-  lastName: z
-    .string()
-    .min(1)
-    .refine((value) => /^[a-zA-Z]+$/.test(value), {
-      message: `{#label} must only contain alphabetical characters`,
-    }),
+  lastName: z.string().min(1),
+  // .refine((value) => /^[a-zA-Z]+$/.test(value), {
+  //   message: `{#label} must only contain alphabetical characters`,
+  // }),
 })
 
 const createGuardianValidationSchema = z.object({
@@ -71,22 +66,9 @@ const createStudentValidationSchema = z.object({
 })
 
 const updateUserNameValidationSchema = z.object({
-  firstName: z
-    .string()
-    .min(1)
-    .max(20)
-    .refine((value) => /^[A-Z][a-z]*$/.test(value), {
-      message: `{#label} must start with an uppercase letter and be followed by lowercase letters`,
-    })
-    .optional(), // If optional, trim is applied without requiring the field
+  firstName: z.string().min(1).max(20).optional(), // If optional, trim is applied without requiring the field
   middleName: z.string().optional(), // If optional, trim is applied without requiring the field
-  lastName: z
-    .string()
-    .min(1)
-    .refine((value) => /^[a-zA-Z]+$/.test(value), {
-      message: `{#label} must only contain alphabetical characters`,
-    })
-    .optional(),
+  lastName: z.string().min(1).optional(),
 })
 
 const updateGuardianValidationSchema = z.object({

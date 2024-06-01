@@ -11,14 +11,7 @@ const handleGetStudents = catchAsync(async (req, res) => {
     statusCode: httpStatus.OK,
     success: true,
     message: 'Students data retrived successfully',
-    data: {
-      meta: {
-        page: req?.query?.page,
-        limit: req?.query?.limit,
-        total: result?.length,
-      },
-      result: result,
-    },
+    data: result,
   })
 })
 

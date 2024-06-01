@@ -135,7 +135,7 @@ const studentSchema = new Schema<TStudent, StudentModel, StudentMethods>(
   },
 )
 
-// filter out deleted documents
+// filter out deleted documents by using mongoose query middleware (pre)
 studentSchema.pre('find', function (next) {
   this.find({ isDeleted: { $ne: true } })
   next()

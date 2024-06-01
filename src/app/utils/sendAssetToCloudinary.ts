@@ -20,7 +20,7 @@ export const sendImageToCloudinary = (path: string, imageName: string) => {
           reject(error)
         } else {
           resolve(result)
-          // delete a file asynchronously
+          // delete temp after uploaded to cloudinary asynchronously
           fs.unlink(path, (err) => {
             if (err) {
               console.error(err)

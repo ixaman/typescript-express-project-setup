@@ -26,6 +26,11 @@ router.post(
 router.post(
   '/create-faculty',
   authMiddleware(USER_ROLE.superAdmin, USER_ROLE.admin),
+  upload.single('file'),
+  (req: Request, res: Response, next: NextFunction) => {
+    req.body = JSON.parse(req.body.data)
+    next()
+  },
   validateRequest(createFacultyValidationSchema),
   userControllers.handleCreateFaculty,
 )
@@ -33,6 +38,11 @@ router.post(
 router.post(
   '/create-admin',
   authMiddleware(USER_ROLE.superAdmin, USER_ROLE.admin),
+  upload.single('file'),
+  (req: Request, res: Response, next: NextFunction) => {
+    req.body = JSON.parse(req.body.data)
+    next()
+  },
   validateRequest(createAdminValidationSchema),
   userControllers.handleCreateAdmin,
 )

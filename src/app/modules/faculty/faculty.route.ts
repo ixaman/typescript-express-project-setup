@@ -9,26 +9,26 @@ const router = express.Router()
 
 router.patch(
   '/:id',
-  authMiddleware(USER_ROLE.admin),
+  authMiddleware(USER_ROLE.superAdmin, USER_ROLE.admin),
   validateRequest(updateFacultyValidationSchema),
   FacultyControllers.handleUpdateFaculty,
 )
 
 router.delete(
   '/:id',
-  authMiddleware(USER_ROLE.admin),
+  authMiddleware(USER_ROLE.superAdmin, USER_ROLE.admin),
   FacultyControllers.handleDeleteFaculty,
 )
 
 router.get(
   '/:id',
-  authMiddleware(USER_ROLE.admin, USER_ROLE.faculty),
+  authMiddleware(USER_ROLE.superAdmin, USER_ROLE.admin, USER_ROLE.faculty),
   FacultyControllers.handleGetSingleFaculty,
 )
 
 router.get(
   '/',
-  authMiddleware(USER_ROLE.admin, USER_ROLE.faculty),
+  authMiddleware(USER_ROLE.superAdmin, USER_ROLE.admin, USER_ROLE.faculty),
   FacultyControllers.handleGetAllFaculties,
 )
 

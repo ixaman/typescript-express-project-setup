@@ -46,6 +46,18 @@ const createStudentIntoDb = async (
     throw new AppError(httpStatus.NOT_FOUND, 'Admission semester not found')
   }
 
+  // find department
+  const academicDepartment = await AcademicDepartment.findById(
+    payload.academicDepartment,
+  )
+
+  if (!academicDepartment) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Academic department not found !')
+  }
+
+  //set academic faculty based on department
+  payload.academicFaculty = academicDepartment.academicFaculty
+
   const session = await mongoose.startSession()
 
   try {
@@ -55,11 +67,15 @@ const createStudentIntoDb = async (
     userData.id = await generateStudentId(admissionSemester)
 
     //SEND IMAGE TO CLOUDINARY
-    const path = file.path
-    const imageName = `${userData.id}_${payload.name.firstName}`
+    if (file) {
+      const path = file.path
+      const imageName = `${userData.id}_${payload.name.firstName}`
 
-    const { secure_url } = (await sendImageToCloudinary(path, imageName)) as {
-      secure_url: string
+      const { secure_url } = (await sendImageToCloudinary(path, imageName)) as {
+        secure_url: string
+      }
+
+      payload.profileImg = secure_url
     }
 
     //create a user do (transaction-1)
@@ -74,7 +90,6 @@ const createStudentIntoDb = async (
       //set id, _id as user
       payload.id = newUser[0].id
       payload.user = newUser[0]._id //referenced id
-      payload.profileImg = secure_url
       //create a student do (transaction-2)
       const newStudent = await Student.create([payload], { session })
 
@@ -97,7 +112,11 @@ const createStudentIntoDb = async (
   }
 }
 
-const createFacultyIntoDB = async (password: string, payload: TFaculty) => {
+const createFacultyIntoDB = async (
+  file: any,
+  password: string,
+  payload: TFaculty,
+) => {
   // create a user object
   const userData: Partial<TUser> = {}
 
@@ -123,6 +142,18 @@ const createFacultyIntoDB = async (password: string, payload: TFaculty) => {
     session.startTransaction()
     //set  generated id
     userData.id = await generateFacultyId()
+
+    //SEND IMAGE TO CLOUDINARY
+    if (file) {
+      const path = file.path
+      const imageName = `${userData.id}_${payload.name.firstName}`
+
+      const { secure_url } = (await sendImageToCloudinary(path, imageName)) as {
+        secure_url: string
+      }
+
+      payload.profileImg = secure_url
+    }
 
     // create a user (transaction-1)
     const newUser = await User.create([userData], { session }) // array
@@ -154,7 +185,11 @@ const createFacultyIntoDB = async (password: string, payload: TFaculty) => {
   }
 }
 
-const createAdminIntoDB = async (password: string, payload: TAdmin) => {
+const createAdminIntoDB = async (
+  file: any,
+  password: string,
+  payload: TAdmin,
+) => {
   // create a user object
   const userData: Partial<TUser> = {}
 
@@ -172,6 +207,18 @@ const createAdminIntoDB = async (password: string, payload: TAdmin) => {
     session.startTransaction()
     //set  generated id
     userData.id = await generateAdminId()
+
+    //SEND IMAGE TO CLOUDINARY
+    if (file) {
+      const path = file.path
+      const imageName = `${userData.id}_${payload.name.firstName}`
+
+      const { secure_url } = (await sendImageToCloudinary(path, imageName)) as {
+        secure_url: string
+      }
+
+      payload.profileImg = secure_url
+    }
 
     // create a user (transaction-1)
     const newUser = await User.create([userData], { session })
